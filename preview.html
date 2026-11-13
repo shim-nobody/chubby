@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>A Little Sorry, My Baby 🧸</title>
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6B9D',
+            'soft-pink': '#FFD6E5',
+            'bg-main': '#FFF5F8',
+            'light-cream': '#FFF9F0',
+            'dark-text': '#49333D',
+            lavender: '#DCCBFF',
+          },
+          fontFamily: {
+            handwritten: ['"Dancing Script"', 'cursive'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #FFF5F8;
+      color: #49333D;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-handwritten { font-family: 'Dancing Script', cursive; }
+    .font-serif-custom { font-family: 'Playfair Display', Georgia, serif; }
+
+    .paper-texture {
+      background-color: #FFF9F0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 27px,
+        rgba(255,107,157,0.07) 27px,
+        rgba(255,107,157,0.07) 28px
+      );
+      position: relative;
+    }
+    .card-gradient-border {
+      position: relative;
+      background: white;
+    }
+    .card-gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(135deg, #FF6B9D, #DCCBFF, #FFD6E5);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.08); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.08); }
+      70% { transform: scale(1); }
+    }
+    .animate-heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float { animation: floatY 3s ease-in-out infinite; }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    .animate-twinkle { animation: twinkle 2.5s ease-in-out infinite; }
+    .heart-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      animation: floatUp 3s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+    }
+  </style>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // SVG Teddy Bear
+    function TeddySVG({ size = 120, variant = 'default' }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="100" cy="140" rx="52" ry="48" fill="#C8956C"/>
+          <ellipse cx="100" cy="148" rx="30" ry="26" fill="#E8B48A"/>
+          <ellipse cx="72" cy="180" rx="22" ry="14" fill="#C8956C"/>
+          <ellipse cx="128" cy="180" rx="22" ry="14" fill="#C8956C"/>
+          {variant === 'hugging' ? (
+            <path d="M48 120 Q20 130 30 155" stroke="#C8956C" strokeWidth="20" strokeLinecap="round" fill="none"/>
+          ) : variant === 'waving' ? (
+            <path d="M48 118 Q28 95 38 72" stroke="#C8956C" strokeWidth="20" strokeLinecap="round" fill="none"/>
+          ) : (
+            <path d="M48 128 Q28 118 30 100" stroke="#C8956C" strokeWidth="20" strokeLinecap="round" fill="none"/>
+          )}
+          {variant === 'hugging' ? (
+            <path d="M152 120 Q178 130 170 155" stroke="#C8956C" strokeWidth="20" strokeLinecap="round" fill="none"/>
+          ) : (
+            <path d="M152 128 Q172 118 170 100" stroke="#C8956C" strokeWidth="20" strokeLinecap="round" fill="none"/>
+          )}
+          <circle cx="100" cy="82" r="52" fill="#D4A574"/>
+          <circle cx="58" cy="42" r="20" fill="#C8956C"/>
+          <circle cx="58" cy="42" r="12" fill="#E8B48A"/>
+          <circle cx="142" cy="42" r="20" fill="#C8956C"/>
+          <circle cx="142" cy="42" r="12" fill="#E8B48A"/>
+          <ellipse cx="100" cy="92" rx="34" ry="28" fill="#E8B48A"/>
+          <circle cx="86" cy="78" r="7" fill="#49333D"/>
+          <circle cx="114" cy="78" r="7" fill="#49333D"/>
+          <circle cx="88" cy="76" r="2.5" fill="white"/>
+          <circle cx="116" cy="76" r="2.5" fill="white"/>
+          <ellipse cx="100" cy="90" rx="5" ry="3.5" fill="#8B5E3C"/>
+          <path d="M90 97 Q100 106 110 97" stroke="#8B5E3C" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+          <ellipse cx="78" cy="92" rx="10" ry="6" fill="#FF6B9D" fillOpacity="0.35"/>
+          <ellipse cx="122" cy="92" rx="10" ry="6" fill="#FF6B9D" fillOpacity="0.35"/>
+          {variant === 'waving' && <circle cx="40" cy="68" r="12" fill="#C8956C"/>}
+          <path d="M88 118 L100 125 L112 118 L100 111 Z" fill="#FF6B9D"/>
+          <circle cx="100" cy="118" r="4" fill="#FF8FB3"/>
+        </svg>
+      );
+    }
+
+    // Floating heart trigger
+    function spawnHearts(count = 20) {
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'heart-particle select-none';
+        el.innerText = ['❤️', '💗', '💕', '🌸', '✨'][Math.floor(Math.random() * 5)];
+        el.style.left = `${Math.random() * 95}%`;
+        el.style.bottom = `${Math.random() * 20}%`;
+        el.style.fontSize = `${16 + Math.random() * 24}px`;
+        el.style.animationDuration = `${2 + Math.random() * 2}s`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+      }
+    }
+
+    // Scene 1: Welcome
+    function WelcomeScene({ onNext }) {
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-10 relative text-center"
+             style={{ background: 'linear-gradient(145deg, #FFF5F8 0%, #FFD6E5 45%, #DCCBFF 100%)' }}>
+          <div className="absolute top-12 left-10 text-xl animate-twinkle">✨</div>
+          <div className="absolute top-20 right-12 text-xl animate-twinkle" style={{ animationDelay: '1s' }}>✨</div>
+          <div className="absolute top-10 right-8 text-3xl animate-float">🌸</div>
+          <div className="absolute bottom-12 left-8 text-3xl animate-float" style={{ animationDelay: '1.5s' }}>🌸</div>
+
+          <div className="animate-float mb-4">
+            <TeddySVG size={180} variant="waving" />
+          </div>
+
+          <h1 className="font-handwritten text-4xl sm:text-5xl font-bold mb-3 text-[#FF6B9D] drop-shadow-sm">
+            Heyyy, My Baby! 🧸
+          </h1>
+          <p className="font-serif-custom italic text-lg sm:text-xl text-[#49333D] mb-2 max-w-sm">
+            Someone has something special to tell you...
+          </p>
+          <p className="font-handwritten text-base text-[#FF6B9D] opacity-75 mb-8">
+            Made with love, just for you.
+          </p>
+
+          <button onClick={() => { spawnHearts(15); onNext(); }}
+                  className="px-8 py-4 rounded-full text-white font-semibold shadow-lg text-lg animate-heartbeat transition hover:scale-105 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)', boxShadow: '0 8px 32px rgba(255,107,157,0.45)' }}>
+            Open Your Surprise 💌
+          </button>
+        </div>
+      );
+    }
+
+    // Scene 2: Envelope
+    function EnvelopeScene({ onNext }) {
+      const [isOpen, setIsOpen] = useState(false);
+
+      const handleOpen = () => {
+        setIsOpen(true);
+        spawnHearts(15);
+      };
+
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-10 text-center"
+             style={{ background: 'linear-gradient(160deg, #FFF5F8 0%, #FFD6E5 60%, #FFF9F0 100%)' }}>
+          <h2 className="font-serif-custom italic text-2xl sm:text-3xl text-[#49333D] mb-8">
+            A little something for you ✨
+          </h2>
+
+          <div className="relative w-80 h-56 cursor-pointer mb-6 transition-transform hover:scale-105"
+               onClick={!isOpen ? handleOpen : undefined}>
+            <div className="absolute inset-0 rounded-2xl shadow-xl overflow-hidden"
+                 style={{ background: 'linear-gradient(145deg, #FFD6E5 0%, #FFB3CE 100%)' }}>
+              <div className="absolute inset-x-0 bottom-0 border-l-[160px] border-r-[160px] border-b-[112px] border-l-transparent border-r-transparent border-b-[#FFB3CE]" />
+            </div>
+
+            {/* Letter Inside */}
+            <div className={`absolute inset-x-4 rounded-xl flex flex-col items-center justify-center p-4 shadow transition-all duration-700 ${isOpen ? '-top-12 opacity-100' : 'top-4 opacity-0'}`}
+                 style={{ background: '#FFF9F0' }}>
+              <span className="text-2xl mb-1">❤️</span>
+              <p className="font-handwritten text-[#FF6B9D] text-lg font-bold">
+                To My Favourite Person ❤️
+              </p>
+            </div>
+
+            {/* Flap */}
+            <div className={`absolute inset-x-0 top-0 origin-top transition-transform duration-700 ${isOpen ? 'rotate-180 -scale-y-100' : ''}`}
+                 style={{ zIndex: 10 }}>
+              <svg viewBox="0 0 320 120" className="w-full">
+                <polygon points="0,0 320,0 160,112" fill="#FF6B9D" />
+              </svg>
+            </div>
+
+            {!isOpen && (
+              <div className="absolute left-1/2 top-1/3 -translate-x-1/2 text-4xl animate-bounce" style={{ zIndex: 20 }}>
+                💌
+              </div>
+            )}
+          </div>
+
+          {!isOpen ? (
+            <p className="font-handwritten text-lg text-[#FF6B9D] animate-pulse">
+              Tap the envelope to open
+            </p>
+          ) : (
+            <div className="max-w-xs animate-fade-in">
+              <p className="font-handwritten text-xl text-[#49333D] mb-6 leading-relaxed">
+                Baby, before anything else, I just want you to know how special you are to me.
+              </p>
+              <button onClick={onNext}
+                      className="px-8 py-3 rounded-full text-white font-semibold shadow-lg text-base hover:scale-105 active:scale-95 transition"
+                      style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)' }}>
+                Continue 💗
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Scene 3: Letter
+    function LetterScene({ onNext }) {
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-start px-4 py-10"
+             style={{ background: 'linear-gradient(180deg, #FFF9F0 0%, #FFF5F8 60%, #FFD6E5 100%)' }}>
+          <div className="text-center mb-6">
+            <span className="text-3xl">💌</span>
+            <h2 className="font-serif-custom italic text-2xl text-[#FF6B9D] mt-2">
+              A Letter From My Heart
+            </h2>
+          </div>
+
+          <div className="w-full max-w-md relative mb-8">
+            <div className="flex justify-end pr-4 mb-2 animate-float">
+              <TeddySVG size={90} variant="default" />
+            </div>
+
+            <div className="paper-texture rounded-3xl p-7 pl-9 shadow-xl relative border-l-4 border-[#FF6B9D]">
+              <div className="absolute top-4 right-5 text-xl opacity-60">🌸</div>
+              <div className="absolute bottom-4 left-6 text-xl opacity-60">🌸</div>
+
+              <p className="font-handwritten text-2xl text-[#FF6B9D] font-bold mb-4">
+                My Dearest Baby,
+              </p>
+              <p className="font-handwritten text-lg text-[#49333D] mb-3 leading-relaxed">
+                I'm really sorry, Chubby.
+              </p>
+              <p className="font-handwritten text-lg text-[#49333D] mb-3 leading-relaxed">
+                I don't want a silly moment or misunderstanding to make you feel that you're any less special to me.
+              </p>
+              <p className="font-handwritten text-lg text-[#49333D] mb-3 leading-relaxed">
+                You mean a lot to me, and I never want you to feel unheard or unappreciated.
+              </p>
+              <p className="font-handwritten text-lg text-[#49333D] mb-3 leading-relaxed">
+                I know saying sorry isn't enough by itself. I want my actions to show you that I genuinely care.
+              </p>
+              <p className="font-handwritten text-lg text-[#49333D] mb-3 leading-relaxed">
+                I love your smile, your little talks, your presence, and all those tiny moments that make us us.
+              </p>
+              <p className="font-handwritten text-xl text-[#FF6B9D] font-bold mb-4">
+                You are my favourite person, Baby. I love you. ❤️
+              </p>
+              <div className="pt-4 border-t border-pink-100">
+                <p className="font-handwritten text-base text-[#49333D]">Always yours,</p>
+                <p className="font-handwritten text-2xl text-[#FF6B9D] font-bold mt-1">Your Captain 🫶</p>
+              </div>
+            </div>
+          </div>
+
+          <button onClick={() => { spawnHearts(12); onNext(); }}
+                  className="px-10 py-4 rounded-full text-white font-semibold shadow-lg text-lg hover:scale-105 active:scale-95 transition"
+                  style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)' }}>
+            Keep reading 💗
+          </button>
+        </div>
+      );
+    }
+
+    // Scene 4: Promises
+    function PromisesScene({ onNext }) {
+      const promises = [
+        { title: 'I Will Listen', emoji: '👂', text: "I'll try to understand your feelings instead of rushing to respond." },
+        { title: 'More Understanding', emoji: '🤝', text: "I'll communicate honestly and try to handle misunderstandings with patience." },
+        { title: 'Show It Through Actions', emoji: '🌸', text: "I want my actions to show you how much you mean to me." }
+      ];
+
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-start px-4 py-10"
+             style={{ background: 'linear-gradient(145deg, #FFF5F8 0%, #FFD6E5 50%, #DCCBFF 100%)' }}>
+          <div className="text-center mb-8">
+            <span className="text-4xl block mb-2">💗</span>
+            <h2 className="font-serif-custom font-semibold text-2xl sm:text-3xl text-[#49333D]">
+              Three Little Promises, Baby 💗
+            </h2>
+            <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#FF6B9D]" />
+          </div>
+
+          <div className="flex flex-col gap-5 w-full max-w-sm mb-8">
+            {promises.map((p, i) => (
+              <div key={i} className="card-gradient-border rounded-3xl p-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+                <div className="text-4xl mb-3">{p.emoji}</div>
+                <h3 className="font-serif-custom font-semibold text-lg text-[#FF6B9D] mb-2">{p.title}</h3>
+                <p className="font-handwritten text-lg text-[#49333D] leading-relaxed">{p.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={() => { spawnHearts(15); onNext(); }}
+                  className="px-10 py-4 rounded-full text-white font-semibold shadow-lg text-lg hover:scale-105 active:scale-95 transition"
+                  style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)' }}>
+            Next 💌
+          </button>
+        </div>
+      );
+    }
+
+    // Scene 5: Surprise
+    function SurpriseScene({ onNext }) {
+      const [hugged, setHugged] = useState(false);
+
+      const handleHug = () => {
+        setHugged(true);
+        spawnHearts(25);
+      };
+
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-10 text-center"
+             style={{ background: 'linear-gradient(145deg, #FFF5F8 0%, #FFD6E5 50%, #FFF9F0 100%)' }}>
+          <h2 className="font-serif-custom font-semibold text-2xl sm:text-3xl text-[#49333D] mb-2">
+            One Tiny Question, Chubby...
+          </h2>
+          <p className="font-handwritten text-2xl text-[#FF6B9D] mb-8">
+            Can I have a little smile from you? 🥺
+          </p>
+
+          <div className="relative mb-8 flex justify-center items-end">
+            <div className="animate-float">
+              <TeddySVG size={140} variant={hugged ? "hugging" : "default"} />
+            </div>
+            <div className="animate-float" style={{ transform: 'scaleX(-1)', marginLeft: hugged ? '-24px' : '8px' }}>
+              <TeddySVG size={140} variant={hugged ? "hugging" : "default"} />
+            </div>
+            {hugged && (
+              <div className="absolute top-0 text-4xl animate-bounce">
+                ❤️
+              </div>
+            )}
+          </div>
+
+          {hugged && (
+            <div className="bg-white/80 backdrop-blur rounded-2xl px-6 py-4 shadow-md max-w-xs mb-6 animate-fade-in">
+              <p className="font-handwritten text-xl text-[#FF6B9D] font-bold">
+                Sending you the biggest virtual hug, Baby! ❤️
+              </p>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 w-full max-w-xs">
+            {!hugged && (
+              <button onClick={handleHug}
+                      className="w-full py-4 rounded-full text-white font-semibold shadow-lg text-lg hover:scale-105 active:scale-95 transition"
+                      style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)' }}>
+                Sending you a hug 🤗
+              </button>
+            )}
+            <button onClick={() => spawnHearts(20)}
+                    className="w-full py-3 rounded-full font-semibold border-2 border-[#FF6B9D] text-[#FF6B9D] bg-white/70 hover:bg-pink-50 transition">
+              Play our little surprise 🌸
+            </button>
+            <button onClick={onNext}
+                    className="w-full py-3 rounded-full text-white font-semibold shadow text-base"
+                    style={{ background: 'linear-gradient(135deg, #DCCBFF 0%, #BFA4FF 100%)' }}>
+              One Last Thing... 🌸
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Scene 6: Final
+    function FinalScene() {
+      const [hugged, setHugged] = useState(false);
+
+      const handleFinalHug = () => {
+        setHugged(true);
+        spawnHearts(35);
+      };
+
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-10 text-center relative"
+             style={{ background: 'linear-gradient(145deg, #FFF5F8 0%, #FFD6E5 40%, #DCCBFF 80%, #FFF5F8 100%)' }}>
+          <div className="absolute top-10 left-12 text-2xl animate-twinkle">✨</div>
+          <div className="absolute top-16 right-12 text-xl animate-twinkle" style={{ animationDelay: '1s' }}>✨</div>
+
+          {/* Heart Moon */}
+          <div className="w-36 h-36 rounded-full flex items-center justify-center shadow-inner mb-6 relative animate-float"
+               style={{ background: 'radial-gradient(circle, #FFE8F0 0%, #FFD6E5 100%)', boxShadow: '0 0 32px rgba(255,107,157,0.3)' }}>
+            <span className="text-5xl">❤️</span>
+          </div>
+
+          <div className="flex justify-center items-end mb-6">
+            <TeddySVG size={120} variant="hugging" />
+            <div style={{ transform: 'scaleX(-1)', marginLeft: '-20px' }}>
+              <TeddySVG size={120} variant="hugging" />
+            </div>
+          </div>
+
+          <h2 className="font-serif-custom font-semibold text-2xl sm:text-3xl text-[#49333D] mb-3 max-w-sm">
+            You're My Favourite Part of Every Day ❤️
+          </h2>
+          <p className="font-serif-custom italic text-base text-[#49333D] opacity-80 mb-6 max-w-xs">
+            No matter how imperfect I may be, I always want to keep learning how to love you better.
+          </p>
+
+          <div className="bg-white/70 backdrop-blur rounded-3xl px-6 py-5 shadow-lg max-w-xs mb-6">
+            <p className="font-handwritten text-2xl text-[#FF6B9D] font-bold leading-relaxed">
+              I love you, Baby.<br />
+              Forever your Captain. 🧸❤️
+            </p>
+          </div>
+
+          {hugged && (
+            <div className="bg-white/80 backdrop-blur rounded-2xl px-5 py-3 shadow mb-6 animate-fade-in max-w-xs">
+              <p className="font-handwritten text-lg text-[#FF6B9D]">
+                Wrapped in a million hugs and all my love. Forever yours. 💗
+              </p>
+            </div>
+          )}
+
+          <button onClick={handleFinalHug}
+                  className="px-10 py-4 rounded-full text-white font-semibold shadow-lg text-lg animate-heartbeat hover:scale-105 active:scale-95 transition"
+                  style={{ background: 'linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%)' }}>
+            Send a virtual hug 🤗
+          </button>
+        </div>
+      );
+    }
+
+    // App Component
+    function App() {
+      const [scene, setScene] = useState(0);
+
+      const next = () => {
+        if (scene < 5) setScene(s => s + 1);
+      };
+
+      return (
+        <div className="relative w-full min-h-screen">
+          {scene === 0 && <WelcomeScene onNext={next} />}
+          {scene === 1 && <EnvelopeScene onNext={next} />}
+          {scene === 2 && <LetterScene onNext={next} />}
+          {scene === 3 && <PromisesScene onNext={next} />}
+          {scene === 4 && <SurpriseScene onNext={next} />}
+          {scene === 5 && <FinalScene />}
+
+          {/* Progress Dots */}
+          {scene > 0 && (
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-40 pointer-events-none">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i}
+                     className="rounded-full transition-all duration-300"
+                     style={{
+                       width: i === scene ? 20 : 7,
+                       height: 7,
+                       background: i === scene ? '#FF6B9D' : 'rgba(255,107,157,0.3)'
+                     }} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
+
